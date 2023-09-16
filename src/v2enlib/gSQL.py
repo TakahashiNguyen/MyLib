@@ -1,8 +1,13 @@
 from oauth2client.service_account import ServiceAccountCredentials
-import gspread
+import gspread, re
 
 
 class GSQLClass:
+    @staticmethod
+    def is_link_using_regex(string):
+        pattern = re.compile(r"https?://\S+")
+        return bool(re.match(pattern, string))
+
     def __init__(self, sheetName: str, tableName: str = None) -> None:
         scope = [
             "https://spreadsheets.google.com/feeds",
@@ -14,7 +19,10 @@ class GSQLClass:
             "client_secret.json", scope
         )
         client = gspread.authorize(creds)
-        self.sheet = client.open(sheetName)
+        if self.is_link_using_regex(sheetName):
+            self.sheet = client.open_by_url(sheetName)
+        else:
+            self.sheet = client.open(sheetName)
         try:
             if tableName is None:
                 self.table = self.sheet.worksheets()
