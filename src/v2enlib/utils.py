@@ -38,7 +38,7 @@ class Debugging:
         try:
             file_handler = FileHandler(f"./logs/{config.v2en.target}.log")
         except AttributeError:
-            file_handler = FileHandler(f'./logs/{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+            file_handler = FileHandler(f'./logs/{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.log')
         file_handler.setLevel(INFO)
         file_handler.setFormatter(formatter)
 
