@@ -45,10 +45,10 @@ class GSQLClassHandle:
 
     # Section:_Utils
     def col_len(self) -> int:
-        return len([value for value in self.table.col_values(1) if value])
+        return self.table.col_count
 
     def row_len(self) -> int:
-        return len([value for value in self.table.row_values(1) if value])
+        return self.table.row_count
 
     def resize(self, row: int, col: int) -> None:
         self.table.resize(row, col)
