@@ -16,7 +16,11 @@ classifiers = [
     "License :: OSI Approved :: GPL-3.0-only",
     "Operating System :: OS Independent",
 ]
+dynamic = ["dependencies"]
 
 [project.urls]
 "Homepage" = "https://github.com/TakahashiNguyen/v2en"
 "Bug Tracker" = "https://github.com/TakahashiNguyen/v2en/issues"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
