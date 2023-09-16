@@ -3,7 +3,7 @@ import gspread
 
 
 class GSQLClass:
-    def __init__(self, sheetName: str, tableName: str) -> None:
+    def __init__(self, sheetName: str, tableName: str = None) -> None:
         scope = [
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/spreadsheets",
@@ -16,7 +16,10 @@ class GSQLClass:
         client = gspread.authorize(creds)
         self.sheet = client.open(sheetName)
         try:
-            self.table = self.sheet.worksheet(tableName)
+            if tableName is None:
+                self.table = self.sheet.worksheets()
+            else:
+                self.table = self.sheet.worksheet(tableName)
         except Exception:
             self.sheet.add_worksheet(title=tableName, rows=1, cols=1)
             self.table = self.sheet.worksheet(tableName)
