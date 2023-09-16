@@ -17,7 +17,6 @@ from v2enlib.config import config
 from time import monotonic, sleep
 from resource import getrusage, RUSAGE_SELF
 from platform import system
-from librosa import note_to_hz
 from hashlib import sha256
 from soundfile import write as sfwrite
 from subprocess import Popen
