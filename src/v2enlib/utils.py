@@ -24,6 +24,7 @@ from difflib import SequenceMatcher
 from multiprocessing.pool import Pool as mpPool, ThreadPool as mpThreadPool
 from multiprocessing import Process as mpProcess, get_context
 from tqdm import tqdm
+from datetime import datetime
 
 import numpy as np
 
@@ -34,7 +35,10 @@ class Debugging:
         makedirs("logs", exist_ok=True)
         makedirs(".wav", exist_ok=True)
 
-        file_handler = FileHandler(f"./logs/{config.v2en.target}.log")
+        try:
+            file_handler = FileHandler(f"./logs/{config.v2en.target}.log")
+        except AttributeError:
+            file_handler = FileHandler(f'./logs/{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
         file_handler.setLevel(INFO)
         file_handler.setFormatter(formatter)
 
