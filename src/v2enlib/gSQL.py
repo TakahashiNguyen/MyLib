@@ -2,35 +2,13 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread, re
 
 
-class GSQLClass:
-    @staticmethod
-    def is_link_using_regex(string):
-        pattern = re.compile(r"https?://\S+")
-        return bool(re.match(pattern, string))
-
-    def __init__(self, sheetName: str, tableName: str = None) -> None:
-        scope = [
-            "https://spreadsheets.google.com/feeds",
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive.file",
-            "https://www.googleapis.com/auth/drive",
-        ]
-        creds = ServiceAccountCredentials.from_json_keyfile_name(
-            "client_secret.json", scope
-        )
-        client = gspread.authorize(creds)
-        if self.is_link_using_regex(sheetName):
-            self.sheet = client.open_by_url(sheetName)
-        else:
-            self.sheet = client.open(sheetName)
+class GSQLClassHandle:
+    def __init__(self, sheet, tableName: str = None) -> None:
         try:
-            if tableName is None:
-                self.table = self.sheet.worksheets()
-            else:
-                self.table = self.sheet.worksheet(tableName)
+            self.table = sheet.worksheet(tableName)
         except Exception:
-            self.sheet.add_worksheet(title=tableName, rows=1, cols=1)
-            self.table = self.sheet.worksheet(tableName)
+            sheet.add_worksheet(title=tableName, rows=1, cols=1)
+            self.table = sheet.worksheet(tableName)
 
     # Section:_Find
     def findRow(self, value: any):
@@ -81,3 +59,28 @@ class GSQLClass:
     def autoFit(self) -> None:
         self.table.rows_auto_resize(0, self.table.row_count - 1)
         self.table.columns_auto_resize(0, self.table.col_count - 1)
+
+
+def is_link_using_regex(string):
+    pattern = re.compile(r"https?://\S+")
+    return bool(re.match(pattern, string))
+
+
+def GSQLClass(sheetName: str, tableName: str = None):
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/drive",
+    ]
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        "client_secret.json", scope
+    )
+    client = gspread.authorize(creds)
+    if is_link_using_regex(sheetName):
+        sheet = client.open_by_url(sheetName)
+    else:
+        sheet = client.open(sheetName)
+    if tableName is None:
+        return [GSQLClassHandle(sheet, e.title) for e in sheet.worksheets()]
+    return GSQLClassHandle(sheet, tableName)
