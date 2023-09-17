@@ -1,9 +1,9 @@
+import contextlib
 from v2enlib.utils import debuger, differentRatio, Pool, ThreadPool
 from v2enlib.gSQL import GSQLClass
 from v2enlib.config import config
 from deep_translator import GoogleTranslator
 from langcodes import Language as lcLanguage
-from translators.server import TranslatorError
 from string import punctuation
 from tabulate import tabulate
 from functools import lru_cache
@@ -13,6 +13,9 @@ import httpx
 # Exceptions
 from requests.exceptions import *
 from deep_translator.exceptions import *
+
+with contextlib.suppress(Exception):
+    from translators.server import TranslatorError
 
 
 class InputSent:
