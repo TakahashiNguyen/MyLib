@@ -21,5 +21,8 @@ class Config:
         else:
             setattr(self, key, values)
 
+    def reset(self):
+        self.__init__()
+
 
 config = Config()
