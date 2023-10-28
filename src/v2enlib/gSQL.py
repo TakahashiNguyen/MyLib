@@ -64,19 +64,18 @@ class GSQLClassHandle:
 def is_link_using_regex(string):
     pattern = re.compile(r"https?://\S+")
     return bool(re.match(pattern, string))
-
-
-def GSQLClass(sheetName: str, tableName: str = None):
-    scope = [
+scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        "client_secret.json", scope
-    )
-    client = gspread.authorize(creds)
+creds = ServiceAccountCredentials.from_json_keyfile_name(
+    "client_secret.json", scope
+)
+client = gspread.authorize(creds)
+
+def GSQLClass(sheetName: str, tableName: str = None):
     if is_link_using_regex(sheetName):
         sheet = client.open_by_url(sheetName)
     else:
