@@ -1,5 +1,6 @@
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread, re
+from functools import lru_cache
 
 
 class GSQLClassHandle:
@@ -75,6 +76,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
 )
 client = gspread.authorize(creds)
 
+@lru_cache
 def GSQLClass(sheetName: str, tableName: str = None):
     if is_link_using_regex(sheetName):
         sheet = client.open_by_url(sheetName)
