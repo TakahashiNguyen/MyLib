@@ -83,4 +83,4 @@ def GSQLClass(sheetName: str, tableName: str = None):
         sheet = client.open(sheetName)
     if tableName is None:
         return [GSQLClassHandle(sheet, e.title) for e in sheet.worksheets()]
-    return GSQLClassHandle(sheet, tableName)
+    return [GSQLClassHandle(sheet, tableName)]
