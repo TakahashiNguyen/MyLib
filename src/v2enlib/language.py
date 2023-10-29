@@ -1,6 +1,6 @@
 import contextlib
 from v2enlib.utils import debuger, differentRatio, Pool, ThreadPool
-from v2enlib.gSQL import GSQLClass
+from v2enlib.gSQL import GSQL
 from v2enlib.config import config
 from deep_translator import GoogleTranslator
 from langcodes import Language as lcLanguage
