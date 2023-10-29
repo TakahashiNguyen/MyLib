@@ -34,6 +34,7 @@ class GSQL:
                 self.writeLRow([""])
             self.table.delete_row(row)
 
+        # Section:_Modify
         def writeCell(self, row: int, col: int, value: any) -> None:
             self.table.update_cell(row, col, value)
 
