@@ -28,6 +28,14 @@ class GSQL:
             else:
                 self.table.append_row(list(value))
 
+        def writeRow(self, row, value: list) -> None:
+            if len(value) and not isinstance(value[0], list):
+                for i, e in enumerate(value):
+                    self.writeCell(row, i + 1, e)
+
+        def update(self, row, col, value: list):
+            self.table.update(self._convert_to_label(row, col), value)
+
         # Section:_Delete
         def deleteRow(self, row: int) -> None:
             if self.col_len() == 1:
@@ -36,7 +44,11 @@ class GSQL:
 
         # Section:_Modify
         def writeCell(self, row: int, col: int, value: any) -> None:
-            self.table.update_cell(row, col, value)
+            try:
+                self.table.update_cell(row, col, value)
+            except gspread.exceptions.APIError:
+                self.resize(row, col)
+                self.table.update_cell(row, col, value)
 
         # Section:_Read
         def getRow(self, row: int) -> any:
@@ -49,6 +61,10 @@ class GSQL:
             return self.table.get_values()
 
         # Section:_Utils
+        def _convert_to_label(self, row, col):
+            col_label = chr(ord("A") + col - 1)
+            return col_label + str(row)
+
         def col_len(self) -> int:
             return self.table.col_count
 
@@ -84,8 +100,14 @@ class GSQL:
             sheet = client.open(sheetName)
         for e in tableName:
             setattr(self, e, self.Table(sheet, "_".join([prefix, e])))
+            getattr(self, e).autoFit()
         self.prefix = prefix
         self.sheet = sheet
+
+        worksheets = sheet.worksheets()
+        sorted_worksheets = sorted(worksheets, key=lambda x: x.title)
+        for i, worksheet in enumerate(sorted_worksheets):
+            worksheet.update_index(i + 1)
 
     def append(self, tableName: list):
         for e in tableName:
