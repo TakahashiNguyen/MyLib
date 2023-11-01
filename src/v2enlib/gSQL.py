@@ -1,3 +1,4 @@
+from httpx import get
 from numpy import isin
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread, re
@@ -117,4 +118,5 @@ class GSQL:
 
     def append(self, tableName: list):
         for e in tableName:
-            setattr(self, e, self.Table(self.sheet, "_".join([self.prefix, e])))
+            if getattr(self, e) != None:
+                setattr(self, e, self.Table(self.sheet, "_".join([self.prefix, e])))
