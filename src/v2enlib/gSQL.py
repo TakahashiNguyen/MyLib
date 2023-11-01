@@ -1,3 +1,4 @@
+from numpy import isin
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread, re
 
@@ -29,9 +30,14 @@ class GSQL:
                 self.table.append_row(list(value))
 
         def writeRow(self, row, value: list) -> None:
-            if len(value) and not isinstance(value[0], list):
-                for i, e in enumerate(value):
+            for i, e in enumerate(value):
+                if not isinstance(e, list):
                     self.writeCell(row, i + 1, e)
+
+        def writeCol(self, col, value: list):
+            for i, e in enumerate(value):
+                if not isinstance(e, list):
+                    self.writeCell(i + 1, col, e)
 
         def update(self, row, col, value: list):
             self.table.update(self._convert_to_label(row, col), value)
