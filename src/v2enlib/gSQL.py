@@ -99,7 +99,7 @@ class GSQL:
         pattern = re.compile(r"https?://\S+")
         return bool(re.match(pattern, string))
 
-    def __init__(self, sheetName: str, tableName: list, prefix=""):
+    def __init__(self, sheetName: str, tableName: list, prefix="", reverse=False):
         if self.__is_link_using_regex(sheetName):
             sheet = client.open_by_url(sheetName)
         else:
@@ -111,7 +111,7 @@ class GSQL:
         self.sheet = sheet
 
         worksheets = sheet.worksheets()
-        sorted_worksheets = sorted(worksheets, key=lambda x: x.title)
+        sorted_worksheets = sorted(worksheets, key=lambda x: x.title, reverse=reverse)
         for i, worksheet in enumerate(sorted_worksheets):
             worksheet.update_index(i + 1)
 
