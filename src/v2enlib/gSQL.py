@@ -18,27 +18,32 @@ class GSQL:
     class Table:
         # Section:_Find
         def findRow(self, value: any):
-            if isinstance(value, int):
-                value = str(value)
-            row = self.table.find(value)
+            row = self.table.find(str(value))
             return False if row is None else row.row
 
         # Section:_Write
         def writeLRow(self, value: list) -> None:
             if len(value) and isinstance(value[0], list):
-                self.table.append_rows(list(value))
+                self.table.append_rows()
             else:
-                self.table.append_row(list(value))
+                self.table.append_row([str(e) for e in value])
 
         def writeRow(self, row, value: list) -> None:
             for i, e in enumerate(value):
                 if not isinstance(e, list):
-                    self.writeCell(row, i + 1, e)
+                    self.writeCell(row, i + 1, str(e))
 
         def writeCol(self, col, value: list):
             for i, e in enumerate(value):
                 if not isinstance(e, list):
-                    self.writeCell(i + 1, col, e)
+                    self.writeCell(i + 1, col, str(e))
+
+        def writeCell(self, row: int, col: int, value: any) -> None:
+            try:
+                self.table.update_cell(row, col, str(value))
+            except gspread.exceptions.APIError:
+                self.resize(row, col)
+                self.table.update_cell(row, col, str(value))
 
         def update(self, row, col, value: list):
             self.table.update(self._convert_to_label(row, col), value)
@@ -48,14 +53,6 @@ class GSQL:
             if self.col_len() == 1:
                 self.writeLRow([""])
             self.table.delete_row(row)
-
-        # Section:_Modify
-        def writeCell(self, row: int, col: int, value: any) -> None:
-            try:
-                self.table.update_cell(row, col, value)
-            except gspread.exceptions.APIError:
-                self.resize(row, col)
-                self.table.update_cell(row, col, value)
 
         # Section:_Read
         def getRow(self, row: int) -> any:
@@ -118,5 +115,5 @@ class GSQL:
 
     def append(self, tableName: list):
         for e in tableName:
-            if getattr(self, e) != None:
+            if not hasattr(self, e):
                 setattr(self, e, self.Table(self.sheet, "_".join([self.prefix, e])))
