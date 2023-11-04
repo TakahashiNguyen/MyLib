@@ -1,5 +1,3 @@
-from httpx import get
-from numpy import isin
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread, re
 
@@ -24,50 +22,51 @@ class GSQL:
         # Section:_Write
         def writeLRow(self, value: list) -> None:
             if len(value) and isinstance(value[0], list):
-                self.table.append_rows()
+                self.table.append_rows(self._convert_to_str(value))
             else:
-                self.table.append_row([str(e) for e in value])
+                self.table.append_row(self._convert_to_str(value))
 
         def writeRow(self, row, value: list) -> None:
             for i, e in enumerate(value):
                 if not isinstance(e, list):
-                    self.writeCell(row, i + 1, str(e))
+                    self.writeCell(row, i + 1, e)
 
         def writeCol(self, col, value: list):
             for i, e in enumerate(value):
                 if not isinstance(e, list):
-                    self.writeCell(i + 1, col, str(e))
+                    self.writeCell(i + 1, col, e)
 
-        def writeCell(self, row: int, col: int, value: any) -> None:
-            try:
-                self.table.update_cell(row, col, str(value))
-            except gspread.exceptions.APIError:
-                self.resize(row, col)
-                self.table.update_cell(row, col, str(value))
-
-        def update(self, row, col, value: list):
-            self.table.update(self._convert_to_label(row, col), value)
+        def writeCell(self, row, col, value):
+            self.table.update(self._convert_to_label(row, col), str(value))
 
         # Section:_Delete
         def deleteRow(self, row: int) -> None:
-            if self.col_len() == 1:
-                self.writeLRow([""])
             self.table.delete_row(row)
 
         # Section:_Read
         def getRow(self, row: int) -> any:
-            return self.table.row_values(row)
+            return self._convert_to_auto(self.table.row_values(row))
 
         def getCol(self, col: int) -> any:
-            return self.table.col_values(col)
+            return self._convert_to_auto(self.table.col_values(col))
 
         def getAll(self) -> any:
-            return self.table.get_values()
+            return self._convert_to_auto(self.table.get_values())
 
         # Section:_Utils
         def _convert_to_label(self, row, col):
             col_label = chr(ord("A") + col - 1)
             return col_label + str(row)
+
+        def _convert_to_str(self, value):
+            if isinstance(value, list):
+                return [self._convert_to_str(e) for e in value]
+            return str(value)
+
+        def _convert_to_auto(self, value):
+            if isinstance(value, list):
+                return [self._convert_to_auto(e) for e in value]
+            return int(value) if value.isdigit() else str(value)
 
         def col_len(self) -> int:
             return self.table.col_count
