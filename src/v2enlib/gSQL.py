@@ -37,7 +37,9 @@ class GSQL:
                     self.writeCell(i + 1, col, e)
 
         def writeCell(self, row, col, value):
-            self.table.update(self._convert_to_label(row, col), str(value))
+            self.table.update(
+                self._convert_to_label(row, col), self._convert_to_str(value)
+            )
 
         # Section:_Delete
         def deleteRow(self, row: int) -> None:
