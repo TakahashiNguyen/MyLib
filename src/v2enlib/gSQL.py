@@ -43,7 +43,10 @@ class GSQL:
 
         # Section:_Delete
         def deleteRow(self, row: int) -> None:
-            self.table.delete_row(row)
+            try:
+                self.table.delete_row(row)
+            except:
+                self.table.clear()
 
         # Section:_Read
         def getRow(self, row: int) -> any:
